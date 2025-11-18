@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jefe — Iniciar Sesión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 text-white">
+  <div class="h-dvh flex items-center justify-center p-6">
+    <div class="w-full max-w-md bg-white/10 border border-white/20 rounded-2xl p-8 backdrop-blur">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+          <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">Panel de Jefatura</h1>
+          <p class="text-sm text-white/80">Acceso para aprobar solicitudes</p>
+        </div>
+      </div>
+
+      <form id="form" class="space-y-4">
+        <div>
+          <label class="block text-sm mb-1 text-white/90" for="correo">Correo</label>
+          <input id="correo" type="email"
+                 class="w-full h-12 px-4 rounded-xl bg-white/10 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/70"
+                 placeholder="jefe@empresa.com">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-white/90" for="password">Contraseña</label>
+          <input id="password" type="password"
+                 class="w-full h-12 px-4 rounded-xl bg-white/10 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/70"
+                 placeholder="••••••••">
+        </div>
+        <button class="w-full h-12 rounded-xl bg-white text-blue-700 font-semibold hover:bg-slate-100">Ingresar</button>
+      </form>
+      <p id="msg" class="text-rose-200 text-sm mt-3 hidden">Credenciales inválidas.</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('correo').value.trim();
+      const pass  = document.getElementById('password').value.trim();
+      const ok = email.includes('@') && pass.length >= 4;
+      document.getElementById('msg').classList.toggle('hidden', ok);
+      if(ok){ window.location.href = 'boss-dashboard-screen.html'; }
+    });
+  </script>
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    /* Base tokens */
+    :root {
+      --bg: #f1f5f9;        /* slate-100 */
+      --fg: #0f172a;        /* slate-900 */
+      --card: #ffffff;
+      --muted: #64748b;     /* slate-500 */
+      --border: #e2e8f0;    /* slate-200 */
+    }
+    .theme-dark :root {}
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800, .theme-dark .text-slate-700,
+    .theme-dark .text-slate-600, .theme-dark .text-slate-500,
+    .theme-dark .text-black, .theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .text-white/70, .theme-dark .text-white/80 { color: rgba(255,255,255,0.8) !important; }
+
+    /* Cards / surfaces */
+    .theme-dark .bg-white, .theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-100 { background-color: #111827 !important; }
+
+    /* Borders */
+    .theme-dark .border, .theme-dark .border-slate-200, .theme-dark .border-border { border-color: #334155 !important; }
+
+    /* Inputs */
+    .theme-dark input, .theme-dark textarea, .theme-dark select {
+      background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important;
+    }
+    .theme-dark input::placeholder, .theme-dark textarea::placeholder { color: #94a3b8 !important; }
+
+    /* Buttons with light backgrounds -> adjust if not already colored */
+    .theme-dark .bg-white/10 { background-color: rgba(255,255,255,0.08) !important; }
+    .theme-dark .bg-white/20 { background-color: rgba(255,255,255,0.16) !important; }
+    .theme-dark .bg-white/30 { background-color: rgba(255,255,255,0.24) !important; }
+    .theme-dark .text-black { color: #e5e7eb !important; }
+
+    /* Modals */
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+
+  <!-- Floating theme toggle -->
+  <button id="themeToggleFab" aria-label="Cambiar tema"
+          class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme';
+      const root = document.documentElement;
+      function apply(theme){
+        const dark = theme === 'dark';
+        root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon');
+        const sun  = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); }
+      }
+      const saved = localStorage.getItem(key) || 'light';
+      apply(saved);
+
+      const fab = document.getElementById('themeToggleFab');
+      if(fab){
+        fab.addEventListener('click', () => {
+          const now = root.classList.contains('theme-dark') ? 'light' : 'dark';
+          localStorage.setItem(key, now);
+          apply(now);
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

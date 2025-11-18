@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OPS DRIVER — Administración de Datos</title>
+  <script src="https://cdn.tailwindcss.com">
+    // Mostrar estado del backend remoto
+    const badge = document.createElement('div');
+    badge.className = 'fixed top-4 right-4 px-3 py-1 rounded-full text-xs bg-slate-800 text-white';
+    badge.textContent = 'Backend: local';
+    (async ()=>{
+      try{
+        const r = await fetch('/api/store/users', { cache:'no-store' });
+        if(r.ok){ badge.textContent = 'Backend: remoto'; }
+      }catch(_){}
+    })();
+    document.body.appendChild(badge);
+  </script>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="max-w-4xl mx-auto p-6 space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">Administración de Datos</h1>
+        <p class="text-slate-600">Exportar, importar, poblar (seed) y limpiar</p>
+      </div>
+      <a href="index.html" class="underline text-slate-600">Volver al índice</a>
+    </div>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white rounded-2xl p-4 border-2 border-slate-200 space-y-3">
+        <h2 class="font-semibold text-slate-800">Backup</h2>
+        <button id="btnExport" class="w-full h-12 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500">Exportar JSON</button>
+        <label class="block">
+          <span class="text-sm text-slate-600">Importar JSON</span>
+          <input id="fileImport" type="file" accept="application/json" class="mt-1 block w-full text-sm text-slate-600">
+        </label>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 border-2 border-slate-200 space-y-3">
+        <h2 class="font-semibold text-slate-800">Herramientas</h2>
+        <button id="btnSeed" class="w-full h-12 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-500">Poblar datos de ejemplo</button>
+        <button id="btnClear" class="w-full h-12 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-500">Limpiar todo</button>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-4 border-2 border-slate-200">
+      <h2 class="font-semibold text-slate-800 mb-4">Resumen</h2>
+      <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-4 border-2 border-slate-200">
+      <h2 class="font-semibold text-slate-800 mb-4">Muestras</h2>
+      <div id="samples" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+  </div>
+
+  <script src="opsdata.js">
+    // Mostrar estado del backend remoto
+    const badge = document.createElement('div');
+    badge.className = 'fixed top-4 right-4 px-3 py-1 rounded-full text-xs bg-slate-800 text-white';
+    badge.textContent = 'Backend: local';
+    (async ()=>{
+      try{
+        const r = await fetch('/api/store/users', { cache:'no-store' });
+        if(r.ok){ badge.textContent = 'Backend: remoto'; }
+      }catch(_){}
+    })();
+    document.body.appendChild(badge);
+  </script>
+  <script>
+    const summary = document.getElementById('summary');
+    const samples = document.getElementById('samples');
+    function metric(label, val){ return `<div class="p-4 rounded-xl border border-slate-200"><p class="text-slate-500 text-sm">${label}</p><p class="text-2xl font-bold">${val}</p></div>`; }
+    function card(title, items){
+      return `<div class="p-3 rounded-xl border border-slate-200"><p class="font-semibold mb-2">${title}</p>${
+        items.slice(0,5).map(x => `<p class="text-sm text-slate-600 truncate">• ${JSON.stringify(x)}</p>`).join('') || '<p class="text-sm text-slate-500">Sin datos</p>'
+      }</div>`;
+    }
+    async function refresh(){
+      const [users, vehicles, requests, movements] = await Promise.all([
+        OpsData.listUsers(), OpsData.listVehicles(), OpsData.listRequests(), OpsData.listMovements()
+      ]);
+      summary.innerHTML = ''
+        + metric('Usuarios', users.length)
+        + metric('Vehículos', vehicles.length)
+        + metric('Solicitudes', requests.length)
+        + metric('Movimientos', movements.length);
+      samples.innerHTML = ''
+        + card('Usuarios', users)
+        + card('Vehículos', vehicles)
+        + card('Solicitudes', requests)
+        + card('Movimientos', movements);
+    }
+
+    document.getElementById('btnExport').addEventListener('click', async ()=>{
+      const data = await OpsData.exportAll();
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'opsdriver-backup.json'; a.click();
+    });
+
+    document.getElementById('fileImport').addEventListener('change', async (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const text = await file.text();
+      try{ await OpsData.importAll(text); showModal('Datos importados'); refresh(); }
+      catch(err){ showModal('Error al importar: ' + (err && err.message ? err.message : err)); }
+    });
+
+    document.getElementById('btnSeed').addEventListener('click', async ()=>{
+      // Seed básico
+      await OpsData.addUser({ role:'vigilante', nombres:'Ana', apellidos:'Rojas', dni:'12345678', correo:'ana@empresa.com' });
+      await OpsData.addUser({ role:'jefe', nombres:'Luis', apellidos:'Vega', dni:'87654321', correo:'luis@empresa.com' });
+      await OpsData.addVehicle({ placa:'EAH-038', marca:'NISSAN', modelo:'FRONTIER', anio:2022, color:'PLATA' });
+      await OpsData.addVehicle({ placa:'EAK-235', marca:'TOYOTA', modelo:'HILUX', anio:2021, color:'BLANCO' });
+      await OpsData.createRequest({ placa:'EAH-038', conductor:'Junior Merardo', destino:'TRUJILLO', fecha:'2025-10-03', hora:'10:15', motivo:'Entrega documentos' });
+      await OpsData.addMovement({ tipo:'Puerta', placa:'EAK-235', conductor:'Gary Frank', papeleta:'00001-2025', ts:new Date().toISOString(), kmSalida:27836, kmLlegada:27912 });
+      showModal('Datos de ejemplo creados');
+      refresh();
+    });
+
+    document.getElementById('btnClear').addEventListener('click', async ()=>{
+      await Promise.all(['users','vehicles','requests','movements'].map(s => OpsData.clearStore(s)));
+      showModal('Datos limpiados');
+      refresh();
+    });
+
+    refresh();
+  
+    // Mostrar estado del backend remoto
+    const badge = document.createElement('div');
+    badge.className = 'fixed top-4 right-4 px-3 py-1 rounded-full text-xs bg-slate-800 text-white';
+    badge.textContent = 'Backend: local';
+    (async ()=>{
+      try{
+        const r = await fetch('/api/store/users', { cache:'no-store' });
+        if(r.ok){ badge.textContent = 'Backend: remoto'; }
+      }catch(_){}
+    })();
+    document.body.appendChild(badge);
+  </script>
+  <!-- modal & theme -->
+
+  <!-- Modal -->
+  <div id="appModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 grid place-items-center p-4">
+      <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b">
+          <h3 id="appModalTitle" class="text-lg font-semibold text-slate-800">Aviso</h3>
+        </div>
+        <div class="px-6 py-4">
+          <p id="appModalMsg" class="text-slate-700"></p>
+        </div>
+        <div class="px-6 py-4 border-t flex justify-end gap-2">
+          <button id="appModalOk" class="h-10 px-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const modal = document.getElementById('appModal');
+      const titleEl = document.getElementById('appModalTitle');
+      const msgEl = document.getElementById('appModalMsg');
+      const okBtn = document.getElementById('appModalOk');
+      let okHandler = null;
+      window.showModal = function(message, title='Aviso', okText='Aceptar', onOk=null){
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        okBtn.textContent = okText;
+        okHandler = typeof onOk === 'function' ? onOk : null;
+        modal.classList.remove('hidden');
+      };
+      function close(){ modal.classList.add('hidden'); }
+      okBtn.addEventListener('click', function(){ const cb = okHandler; okHandler=null; close(); if(cb){ try{cb();}catch(e){} } });
+      modal.addEventListener('click', function(e){ if(e.target === modal){ close(); } });
+      document.addEventListener('keydown', function(e){ if(!modal.classList.contains('hidden') && e.key === 'Escape'){ close(); } });
+    })();
+  
+    // Mostrar estado del backend remoto
+    const badge = document.createElement('div');
+    badge.className = 'fixed top-4 right-4 px-3 py-1 rounded-full text-xs bg-slate-800 text-white';
+    badge.textContent = 'Backend: local';
+    (async ()=>{
+      try{
+        const r = await fetch('/api/store/users', { cache:'no-store' });
+        if(r.ok){ badge.textContent = 'Backend: remoto'; }
+      }catch(_){}
+    })();
+    document.body.appendChild(badge);
+  </script>
+
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    :root { --bg: #f1f5f9; --fg: #0f172a; --card: #ffffff; --muted: #64748b; --border: #e2e8f0; }
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800,.theme-dark .text-slate-700,.theme-dark .text-slate-600,.theme-dark .text-slate-500,.theme-dark .text-black,.theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .bg-white,.theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50,.theme-dark .bg-slate-100 { background-color: #111827 !important; }
+    .theme-dark .border,.theme-dark .border-slate-200,.theme-dark .border-border { border-color: #334155 !important; }
+    .theme-dark input,.theme-dark textarea,.theme-dark select { background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important; }
+    .theme-dark input::placeholder,.theme-dark textarea::placeholder { color: #94a3b8 !important; }
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+  <button id="themeToggleFab" aria-label="Cambiar tema" class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme'; const root = document.documentElement;
+      function apply(theme){ const dark = theme === 'dark'; root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon'); const sun = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); } }
+      const saved = localStorage.getItem(key) || 'light'; apply(saved);
+      const fab = document.getElementById('themeToggleFab'); if(fab){ fab.addEventListener('click', () => {
+        const now = root.classList.contains('theme-dark') ? 'light' : 'dark'; localStorage.setItem(key, now); apply(now);
+      }); }
+    })();
+  
+    // Mostrar estado del backend remoto
+    const badge = document.createElement('div');
+    badge.className = 'fixed top-4 right-4 px-3 py-1 rounded-full text-xs bg-slate-800 text-white';
+    badge.textContent = 'Backend: local';
+    (async ()=>{
+      try{
+        const r = await fetch('/api/store/users', { cache:'no-store' });
+        if(r.ok){ badge.textContent = 'Backend: remoto'; }
+      }catch(_){}
+    })();
+    document.body.appendChild(badge);
+  </script>
+
+</body>
+</html>

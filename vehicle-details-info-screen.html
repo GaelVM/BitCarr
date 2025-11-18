@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detalles del Vehículo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="storage.js"></script>
+</head>
+<body class="min-h-screen bg-slate-100">
+  <div class="h-dvh flex flex-col">
+    <div class="bg-slate-500 p-4 flex items-center gap-4">
+      <a href="home-screen.html" class="p-2 hover:bg-slate-600 rounded-lg transition-colors" aria-label="Regresar">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <h1 class="text-white font-semibold text-lg flex-1">Detalles del Vehículo</h1>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-lg border-2 border-slate-200">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-3xl font-bold text-[#1e3a8a]" id="placa">EAH-027</h2>
+            <p class="text-slate-600 text-sm" id="marca-modelo-ano">NISSAN FRONTIER 2022</p>
+          </div>
+          <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center">
+            <svg class="w-10 h-10 text-[#1e3a8a]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 8v8m-4-4h8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div><p class="text-slate-500">Color</p><p class="font-semibold text-slate-700" id="color">PLATA</p></div>
+          <div><p class="text-slate-500">Combustible</p><p class="font-semibold text-slate-700" id="combustible">DIESEL</p></div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-200">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600">Kilometraje Actual</span>
+            <span class="text-2xl font-bold text-[#1e3a8a]" id="km">27,912 km</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="gps-map-screen.html" class="block w-full text-left hover:scale-[1.02] transition-transform">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 shadow-lg border-2 border-green-200">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 12h18M12 3v18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">Ubicación GPS en Tiempo Real</h3>
+              <p class="text-xs text-slate-600">Toca para ver en el mapa</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-4 space-y-2">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 2C8 2 4 5 4 9c0 4.5 4.5 9 8 13 3.5-4 8-8.5 8-13 0-4-4-7-8-7z" stroke-width="2"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-slate-500">Latitud</p>
+                <p class="font-mono font-semibold text-slate-700" id="lat">-8.111600</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 2C8 2 4 5 4 9c0 4.5 4.5 9 8 13 3.5-4 8-8.5 8-13 0-4-4-7-8-7z" stroke-width="2"></path>
+              </svg>
+              <div class="flex-1">
+                <p class="text-xs text-slate-500">Longitud</p>
+                <p class="font-mono font-semibold text-slate-700" id="lng">-79.028800</p>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="text-xs text-slate-500">Ubicación Aproximada</p>
+              <p class="font-semibold text-slate-700">Trujillo, La Libertad, Perú</p>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <a href="vehicle-history-screen.html" class="block w-full bg-gradient-to-r from-cyan-500 to-cyan-400 text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-xl text-center">Ver Historial Completo</a>
+    </div>
+  </div>
+
+  <script>
+    // Simular pequeñas variaciones (sólo visual)
+    let lat = -8.1116, lng = -79.0288;
+    const latEl = document.getElementById('lat');
+    const lngEl = document.getElementById('lng');
+    function jitter(v){ return v + (Math.random() - 0.5) * 0.001; }
+    setInterval(() => { lat = jitter(lat); lng = jitter(lng); latEl.textContent = lat.toFixed(6); lngEl.textContent = lng.toFixed(6); }, 5000);
+  </script>
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    /* Base tokens */
+    :root {
+      --bg: #f1f5f9;        /* slate-100 */
+      --fg: #0f172a;        /* slate-900 */
+      --card: #ffffff;
+      --muted: #64748b;     /* slate-500 */
+      --border: #e2e8f0;    /* slate-200 */
+    }
+    .theme-dark :root {}
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800, .theme-dark .text-slate-700,
+    .theme-dark .text-slate-600, .theme-dark .text-slate-500,
+    .theme-dark .text-black, .theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .text-white/70, .theme-dark .text-white/80 { color: rgba(255,255,255,0.8) !important; }
+
+    /* Cards / surfaces */
+    .theme-dark .bg-white, .theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-100 { background-color: #111827 !important; }
+
+    /* Borders */
+    .theme-dark .border, .theme-dark .border-slate-200, .theme-dark .border-border { border-color: #334155 !important; }
+
+    /* Inputs */
+    .theme-dark input, .theme-dark textarea, .theme-dark select {
+      background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important;
+    }
+    .theme-dark input::placeholder, .theme-dark textarea::placeholder { color: #94a3b8 !important; }
+
+    /* Buttons with light backgrounds -> adjust if not already colored */
+    .theme-dark .bg-white/10 { background-color: rgba(255,255,255,0.08) !important; }
+    .theme-dark .bg-white/20 { background-color: rgba(255,255,255,0.16) !important; }
+    .theme-dark .bg-white/30 { background-color: rgba(255,255,255,0.24) !important; }
+    .theme-dark .text-black { color: #e5e7eb !important; }
+
+    /* Modals */
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+
+  <!-- Floating theme toggle -->
+  <button id="themeToggleFab" aria-label="Cambiar tema"
+          class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme';
+      const root = document.documentElement;
+      function apply(theme){
+        const dark = theme === 'dark';
+        root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon');
+        const sun  = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); }
+      }
+      const saved = localStorage.getItem(key) || 'light';
+      apply(saved);
+
+      const fab = document.getElementById('themeToggleFab');
+      if(fab){
+        fab.addEventListener('click', () => {
+          const now = root.classList.contains('theme-dark') ? 'light' : 'dark';
+          localStorage.setItem(key, now);
+          apply(now);
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

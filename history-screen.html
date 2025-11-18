@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi Historial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="storage.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="h-dvh flex flex-col">
+    <div class="bg-gradient-to-r from-amber-500 to-rose-500 text-white p-6">
+      <div class="flex items-center gap-3">
+        <button onclick="history.back()" class="p-2 hover:bg-white/20 rounded-xl" aria-label="Regresar">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold">Mi Historial</h1>
+      </div>
+      <p class="text-white/80 text-sm mt-1">Solicitudes y movimientos</p>
+    </div>
+
+    <div class="p-4 bg-white border-b border-slate-200">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <input id="q" class="h-12 px-3 rounded-xl border-2 border-slate-200" placeholder="Buscar por placa o papeleta">
+        <input id="desde" type="date" class="h-12 px-3 rounded-xl border-2 border-slate-200">
+        <input id="hasta" type="date" class="h-12 px-3 rounded-xl border-2 border-slate-200">
+      </div>
+    </div>
+
+    <div id="lista" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+  </div>
+
+  <script>
+    const datos = opsdb.listMyRequests();
+
+    const lista = document.getElementById('lista');
+    const q = document.getElementById('q');
+    const desde = document.getElementById('desde');
+    const hasta = document.getElementById('hasta');
+
+    function chipEstado(s){
+      if(s === 'Pendiente') return 'bg-amber-100 text-amber-800';
+      if(s === 'Aprobado') return 'bg-emerald-100 text-emerald-800';
+      return 'bg-rose-100 text-rose-800';
+    }
+
+    function render(items){
+      lista.innerHTML = '';
+      if(items.length === 0){
+        lista.innerHTML = '<div class="text-center py-8 text-slate-500">Sin registros</div>';
+        return;
+      }
+      items.forEach(x => {
+        const dt = new Date(x.ts);
+        const fecha = dt.toLocaleDateString('es-PE');
+        const hora  = dt.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+        const row = `
+          <div class="bg-white rounded-xl border border-slate-200 p-3 flex items-center justify-between">
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800">${x.placa}</p>
+              <p class="text-xs text-slate-500">Papeleta ${x.papeleta} — ${fecha} ${hora}</p>
+            </div>
+            <span class="px-2 py-1 rounded-full text-xs font-semibold ${chipEstado(x.estado)}">${x.estado}</span>
+          </div>
+        `;
+        lista.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function filtrar(){
+      const text = q.value.toLowerCase();
+      const d = desde.value ? new Date(desde.value + 'T00:00:00') : null;
+      const h = hasta.value ? new Date(hasta.value + 'T23:59:59') : null;
+      const arr = datos.filter(x => {
+        const okText = (x.placa + x.papeleta).toLowerCase().includes(text);
+        const t = new Date(x.ts);
+        const okDesde = d ? t >= d : true;
+        const okHasta = h ? t <= h : true;
+        return okText && okDesde && okHasta;
+      });
+      render(arr);
+    }
+
+    q.addEventListener('input', filtrar);
+    desde.addEventListener('change', filtrar);
+    hasta.addEventListener('change', filtrar);
+
+    OpsData.listRequests().then(arr => { datos = arr; render(datos); });
+  </script>
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    /* Base tokens */
+    :root {
+      --bg: #f1f5f9;        /* slate-100 */
+      --fg: #0f172a;        /* slate-900 */
+      --card: #ffffff;
+      --muted: #64748b;     /* slate-500 */
+      --border: #e2e8f0;    /* slate-200 */
+    }
+    .theme-dark :root {}
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800, .theme-dark .text-slate-700,
+    .theme-dark .text-slate-600, .theme-dark .text-slate-500,
+    .theme-dark .text-black, .theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .text-white/70, .theme-dark .text-white/80 { color: rgba(255,255,255,0.8) !important; }
+
+    /* Cards / surfaces */
+    .theme-dark .bg-white, .theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-100 { background-color: #111827 !important; }
+
+    /* Borders */
+    .theme-dark .border, .theme-dark .border-slate-200, .theme-dark .border-border { border-color: #334155 !important; }
+
+    /* Inputs */
+    .theme-dark input, .theme-dark textarea, .theme-dark select {
+      background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important;
+    }
+    .theme-dark input::placeholder, .theme-dark textarea::placeholder { color: #94a3b8 !important; }
+
+    /* Buttons with light backgrounds -> adjust if not already colored */
+    .theme-dark .bg-white/10 { background-color: rgba(255,255,255,0.08) !important; }
+    .theme-dark .bg-white/20 { background-color: rgba(255,255,255,0.16) !important; }
+    .theme-dark .bg-white/30 { background-color: rgba(255,255,255,0.24) !important; }
+    .theme-dark .text-black { color: #e5e7eb !important; }
+
+    /* Modals */
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+
+  <!-- Floating theme toggle -->
+  <button id="themeToggleFab" aria-label="Cambiar tema"
+          class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme';
+      const root = document.documentElement;
+      function apply(theme){
+        const dark = theme === 'dark';
+        root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon');
+        const sun  = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); }
+      }
+      const saved = localStorage.getItem(key) || 'light';
+      apply(saved);
+
+      const fab = document.getElementById('themeToggleFab');
+      if(fab){
+        fab.addEventListener('click', () => {
+          const now = root.classList.contains('theme-dark') ? 'light' : 'dark';
+          localStorage.setItem(key, now);
+          apply(now);
+        });
+      }
+    })();
+  </script>
+
+  <script src="opsdata.js"></script>
+</body>
+</html>

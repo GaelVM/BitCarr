@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revisar Solicitud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="storage.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <div class="h-dvh flex flex-col">
+    <div class="bg-indigo-600 text-white p-6">
+      <div class="flex items-center gap-3">
+        <button onclick="history.back()" class="p-2 hover:bg-white/20 rounded-xl" aria-label="Regresar">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold">Revisión de Solicitud</h1>
+      </div>
+      <p class="text-white/80 text-sm mt-1">Verifica los datos y toma una decisión</p>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+      <div class="bg-white rounded-2xl p-6 border-2 border-slate-200">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div><p class="text-slate-500">Papeleta</p><p class="font-semibold" id="papeleta">00435-2025</p></div>
+          <div><p class="text-slate-500">Placa</p><p class="font-semibold" id="placa">EAK-235</p></div>
+          <div><p class="text-slate-500">Conductor</p><p class="font-semibold" id="conductor">Zarate Jara Gary Frank</p></div>
+          <div><p class="text-slate-500">Destino</p><p class="font-semibold" id="destino">CHICAMA</p></div>
+          <div><p class="text-slate-500">Fecha</p><p class="font-semibold" id="fecha">02/10/2025</p></div>
+          <div><p class="text-slate-500">Hora</p><p class="font-semibold" id="hora">08:30</p></div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <p class="text-slate-500 text-sm mb-1">Motivo</p>
+            <p class="text-slate-700">Traslado de documentación a Aduana Salaverry.</p>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+            <p class="text-slate-500 text-sm">Vehículo</p>
+            <p class="font-semibold text-slate-800">NISSAN FRONTIER 2022 • PLATA</p>
+            <p class="text-slate-500 text-sm mt-2">Km Actual</p>
+            <p class="font-bold text-blue-700">27,912 km</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 border-2 border-slate-200">
+        <label class="block">
+          <span class="text-xs text-slate-500">Observaciones (opcional)</span>
+          <textarea id="obs" rows="3" class="mt-1 w-full px-3 py-2 rounded-xl border-2 border-slate-200" placeholder="Escribe una nota..."></textarea>
+        </label>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button id="rechazar" class="h-12 rounded-2xl bg-rose-600 text-white font-semibold hover:bg-rose-500">Rechazar</button>
+          <button id="aprobar"  class="h-12 rounded-2xl bg-emerald-600 text-white font-semibold hover:bg-emerald-500">Aprobar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('aprobar').addEventListener('click', ()=>{
+      showModal('Solicitud aprobada. Se notificará al solicitante.');
+    });
+    document.getElementById('rechazar').addEventListener('click', ()=>{
+      const note = document.getElementById('obs').value.trim();
+      showModal('Solicitud rechazada' + (note ? (' con observación: ' + note) : '.'));
+    });
+  </script>
+
+  <!-- Modal -->
+  <div id="appModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 grid place-items-center p-4">
+      <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b">
+          <h3 id="appModalTitle" class="text-lg font-semibold text-slate-800">Aviso</h3>
+        </div>
+        <div class="px-6 py-4">
+          <p id="appModalMsg" class="text-slate-700"></p>
+        </div>
+        <div class="px-6 py-4 border-t flex justify-end gap-2">
+          <button id="appModalOk" class="h-10 px-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const modal = document.getElementById('appModal');
+      const titleEl = document.getElementById('appModalTitle');
+      const msgEl = document.getElementById('appModalMsg');
+      const okBtn = document.getElementById('appModalOk');
+      let okHandler = null;
+      window.showModal = function(message, title='Aviso', okText='Aceptar', onOk=null){
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        okBtn.textContent = okText;
+        okHandler = typeof onOk === 'function' ? onOk : null;
+        modal.classList.remove('hidden');
+      };
+      function close(){
+        modal.classList.add('hidden');
+      }
+      okBtn.addEventListener('click', function(){
+        const cb = okHandler;
+        okHandler = null;
+        close();
+        if(cb){ try { cb(); } catch(e){} }
+      });
+      modal.addEventListener('click', function(e){
+        if(e.target === modal){ close(); }
+      });
+      document.addEventListener('keydown', function(e){
+        if(!modal.classList.contains('hidden') && e.key === 'Escape'){ close(); }
+      });
+    })();
+  </script>
+
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    /* Base tokens */
+    :root {
+      --bg: #f1f5f9;        /* slate-100 */
+      --fg: #0f172a;        /* slate-900 */
+      --card: #ffffff;
+      --muted: #64748b;     /* slate-500 */
+      --border: #e2e8f0;    /* slate-200 */
+    }
+    .theme-dark :root {}
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800, .theme-dark .text-slate-700,
+    .theme-dark .text-slate-600, .theme-dark .text-slate-500,
+    .theme-dark .text-black, .theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .text-white/70, .theme-dark .text-white/80 { color: rgba(255,255,255,0.8) !important; }
+
+    /* Cards / surfaces */
+    .theme-dark .bg-white, .theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-100 { background-color: #111827 !important; }
+
+    /* Borders */
+    .theme-dark .border, .theme-dark .border-slate-200, .theme-dark .border-border { border-color: #334155 !important; }
+
+    /* Inputs */
+    .theme-dark input, .theme-dark textarea, .theme-dark select {
+      background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important;
+    }
+    .theme-dark input::placeholder, .theme-dark textarea::placeholder { color: #94a3b8 !important; }
+
+    /* Buttons with light backgrounds -> adjust if not already colored */
+    .theme-dark .bg-white/10 { background-color: rgba(255,255,255,0.08) !important; }
+    .theme-dark .bg-white/20 { background-color: rgba(255,255,255,0.16) !important; }
+    .theme-dark .bg-white/30 { background-color: rgba(255,255,255,0.24) !important; }
+    .theme-dark .text-black { color: #e5e7eb !important; }
+
+    /* Modals */
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+
+  <!-- Floating theme toggle -->
+  <button id="themeToggleFab" aria-label="Cambiar tema"
+          class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme';
+      const root = document.documentElement;
+      function apply(theme){
+        const dark = theme === 'dark';
+        root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon');
+        const sun  = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); }
+      }
+      const saved = localStorage.getItem(key) || 'light';
+      apply(saved);
+
+      const fab = document.getElementById('themeToggleFab');
+      if(fab){
+        fab.addEventListener('click', () => {
+          const now = root.classList.contains('theme-dark') ? 'light' : 'dark';
+          localStorage.setItem(key, now);
+          apply(now);
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

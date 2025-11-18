@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OPS DRIVER — Iniciar Sesión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="storage.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+  <div class="h-dvh grid place-items-center p-6">
+    <div class="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur">
+      <div class="mb-6 text-center">
+        <h1 class="text-2xl font-bold">Bienvenido</h1>
+        <p class="text-sm text-white/70">Ingresa a tu cuenta</p>
+      </div>
+      <form id="form" class="space-y-4">
+        <div>
+          <label class="block text-sm mb-1 text-white/80" for="email">Correo</label>
+          <input id="email" type="email" class="w-full h-12 px-4 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="usuario@empresa.com">
+        </div>
+        <div>
+          <label class="block text-sm mb-1 text-white/80" for="pass">Contraseña</label>
+          <input id="pass" type="password" class="w-full h-12 px-4 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="••••••••">
+        </div>
+        <button class="w-full h-12 rounded-xl bg-cyan-500 hover:bg-cyan-400 font-semibold">Entrar</button>
+      </form>
+      <div class="mt-6 text-center text-sm">
+        <span class="text-white/70">¿No tienes cuenta?</span>
+        <a href="register-screen.html" class="underline hover:text-white">Regístrate</a>
+      </div>
+      <div class="mt-4 text-center text-sm">
+        <a href="welcome-screen.html" class="text-white/70 underline">Volver a Bienvenida</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const res = opsdb.login(document.getElementById('email').value.trim(), document.getElementById('pass').value.trim());
+      if(res.ok){ window.location.href = 'home-screen.html'; } else { showModal(res.error); }
+    });
+  </script>
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    /* Base tokens */
+    :root {
+      --bg: #f1f5f9;        /* slate-100 */
+      --fg: #0f172a;        /* slate-900 */
+      --card: #ffffff;
+      --muted: #64748b;     /* slate-500 */
+      --border: #e2e8f0;    /* slate-200 */
+    }
+    .theme-dark :root {}
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800, .theme-dark .text-slate-700,
+    .theme-dark .text-slate-600, .theme-dark .text-slate-500,
+    .theme-dark .text-black, .theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .text-white/70, .theme-dark .text-white/80 { color: rgba(255,255,255,0.8) !important; }
+
+    /* Cards / surfaces */
+    .theme-dark .bg-white, .theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-100 { background-color: #111827 !important; }
+
+    /* Borders */
+    .theme-dark .border, .theme-dark .border-slate-200, .theme-dark .border-border { border-color: #334155 !important; }
+
+    /* Inputs */
+    .theme-dark input, .theme-dark textarea, .theme-dark select {
+      background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important;
+    }
+    .theme-dark input::placeholder, .theme-dark textarea::placeholder { color: #94a3b8 !important; }
+
+    /* Buttons with light backgrounds -> adjust if not already colored */
+    .theme-dark .bg-white/10 { background-color: rgba(255,255,255,0.08) !important; }
+    .theme-dark .bg-white/20 { background-color: rgba(255,255,255,0.16) !important; }
+    .theme-dark .bg-white/30 { background-color: rgba(255,255,255,0.24) !important; }
+    .theme-dark .text-black { color: #e5e7eb !important; }
+
+    /* Modals */
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+
+  <!-- Floating theme toggle -->
+  <button id="themeToggleFab" aria-label="Cambiar tema"
+          class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme';
+      const root = document.documentElement;
+      function apply(theme){
+        const dark = theme === 'dark';
+        root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon');
+        const sun  = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); }
+      }
+      const saved = localStorage.getItem(key) || 'light';
+      apply(saved);
+
+      const fab = document.getElementById('themeToggleFab');
+      if(fab){
+        fab.addEventListener('click', () => {
+          const now = root.classList.contains('theme-dark') ? 'light' : 'dark';
+          localStorage.setItem(key, now);
+          apply(now);
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

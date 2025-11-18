@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OPSDRIVE — Bienvenida</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg1: 30 58 138; --bg2: 37 99 235; --bg3: 59 130 246; }
+    .grad-light { background-image: linear-gradient(to bottom, rgb(var(--bg1)), rgb(var(--bg2)), rgb(var(--bg3))); }
+    .grad-dark  { background-image: linear-gradient(to bottom, rgb(15 23 42), rgb(30 41 59), rgb(15 23 42)); }
+  </style>
+  <script src="storage.js"></script>
+</head>
+<body class="min-h-screen text-white">
+  <div id="root" class="h-dvh flex flex-col p-6 relative grad-light">
+    <button id="toggleTheme" class="absolute top-4 left-4 p-2 rounded-lg hover:bg-white/10" aria-label="Cambiar tema">
+      <svg id="moon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+      <svg id="sun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+        <circle cx="12" cy="12" r="4"></circle>
+      </svg>
+    </button>
+
+    <div class="flex-1 flex flex-col items-center justify-center text-center space-y-12">
+      <div class="relative">
+        <div class="w-48 h-48 bg-cyan-400 rounded-full flex items-center justify-center relative">
+          <svg class="w-48 h-48 text-cyan-300 absolute" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.56-.9 3.317.856 2.417 2.417a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.9 1.56-.856 3.317-2.417 2.417a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.56.9-3.317-.856-2.417-2.417a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35.48-.117.88-.417 1.066-2.573.9-1.56 2.857-3.317 4.417-2.417.77.443 1.884.443 2.654 0z" stroke-width="1.5"/>
+          </svg>
+          <div class="w-32 h-32 bg-white rounded-full flex flex-col items-center justify-center z-10">
+            <svg class="w-16 h-16 text-blue-900" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 13l2-5h14l2 5v6a1 1 0 01-1 1h-1a2 2 0 110-4h-8a2 2 0 110 4H7a2 2 0 110-4H5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="w-10 h-10 text-cyan-400 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 12a9 9 0 0114 0M8.5 15.5a5 5 0 017 0M12 19h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="text-5xl font-bold tracking-wider">OPSDRIVE</h1>
+        <p class="text-lg text-white/90">Sistema de Gestión Vehicular</p>
+      </div>
+    </div>
+
+    <div class="space-y-3 pb-8">
+      <a href="register-screen.html" class="block w-full h-14 leading-[56px] text-center text-lg bg-white text-blue-900 rounded-2xl font-semibold shadow-lg">Registrarse</a>
+      <a href="login-screen.html" class="block w-full h-14 leading-[56px] text-center text-lg border-2 border-white/40 text-black hover:bg-white/90 hover:text-black rounded-2xl font-semibold backdrop-blur-sm bg-white/90">Iniciar Sesión</a>
+      <a href="watchman-login-screen.html" class="block w-full h-14 leading-[56px] text-center text-lg border-2 border-white/40 text-black hover:bg-white/90 hover:text-black rounded-2xl font-semibold backdrop-blur-sm bg-white/90">Iniciar como Vigilante</a>
+      
+      <a href=\"watchman-register.html\" class=\"block w-full h-12 leading-[48px] text-center border-2 border-white/40 text-black rounded-2xl font-semibold backdrop-blur-sm bg-white/80\">Registrar Vigilante</a>
+<a href="boss-login-screen.html" class="block w-full h-14 leading-[56px] text-center text-lg border-2 border-white/40 text-black hover:bg-white/90 hover:text-black rounded-2xl font-semibold backdrop-blur-sm bg-white/90">Iniciar como Jefe</a>
+    
+      <a href=\"boss-register.html\" class=\"block w-full h-12 leading-[48px] text-center border-2 border-white/40 text-black rounded-2xl font-semibold backdrop-blur-sm bg-white/80\">Registrar Jefe</a>
+</div>
+  </div>
+
+  <script>
+    const root = document.getElementById('root');
+    const toggle = document.getElementById('toggleTheme');
+    const moon = document.getElementById('moon');
+    const sun  = document.getElementById('sun');
+    function setDark(isDark) {
+      root.classList.toggle('grad-dark', isDark);
+      root.classList.toggle('grad-light', !isDark);
+      moon.classList.toggle('hidden', isDark);
+      sun.classList.toggle('hidden', !isDark);
+      localStorage.setItem('opsdrive_dark', isDark ? '1' : '0');
+    }
+    setDark(localStorage.getItem('opsdrive_dark') === '1');
+    toggle.addEventListener('click', () => {
+      const isDark = root.classList.contains('grad-light');
+      setDark(isDark);
+    });
+  </script>
+
+  <!-- Global Light/Dark Theme Patch -->
+  <style id="themePatch">
+    /* Base tokens */
+    :root {
+      --bg: #f1f5f9;        /* slate-100 */
+      --fg: #0f172a;        /* slate-900 */
+      --card: #ffffff;
+      --muted: #64748b;     /* slate-500 */
+      --border: #e2e8f0;    /* slate-200 */
+    }
+    .theme-dark :root {}
+    .theme-dark body { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    .theme-dark .text-slate-800, .theme-dark .text-slate-700,
+    .theme-dark .text-slate-600, .theme-dark .text-slate-500,
+    .theme-dark .text-black, .theme-dark .text-foreground { color: #e5e7eb !important; }
+    .theme-dark .text-white/70, .theme-dark .text-white/80 { color: rgba(255,255,255,0.8) !important; }
+
+    /* Cards / surfaces */
+    .theme-dark .bg-white, .theme-dark .bg-card { background-color: #0f172a !important; }
+    .theme-dark .bg-slate-50, .theme-dark .bg-slate-100 { background-color: #111827 !important; }
+
+    /* Borders */
+    .theme-dark .border, .theme-dark .border-slate-200, .theme-dark .border-border { border-color: #334155 !important; }
+
+    /* Inputs */
+    .theme-dark input, .theme-dark textarea, .theme-dark select {
+      background-color: #0f172a !important; color: #e5e7eb !important; border-color: #334155 !important;
+    }
+    .theme-dark input::placeholder, .theme-dark textarea::placeholder { color: #94a3b8 !important; }
+
+    /* Buttons with light backgrounds -> adjust if not already colored */
+    .theme-dark .bg-white/10 { background-color: rgba(255,255,255,0.08) !important; }
+    .theme-dark .bg-white/20 { background-color: rgba(255,255,255,0.16) !important; }
+    .theme-dark .bg-white/30 { background-color: rgba(255,255,255,0.24) !important; }
+    .theme-dark .text-black { color: #e5e7eb !important; }
+
+    /* Modals */
+    .theme-dark #appModal .bg-white { background-color: #0f172a !important; }
+    .theme-dark #appModal h3 { color: #e5e7eb !important; }
+    .theme-dark #appModal p { color: #cbd5e1 !important; }
+  </style>
+
+  <!-- Floating theme toggle -->
+  <button id="themeToggleFab" aria-label="Cambiar tema"
+          class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg grid place-items-center hover:scale-105 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414"/>
+      <circle cx="12" cy="12" r="4"></circle>
+    </svg>
+  </button>
+
+  <script id="themeScript">
+    (function(){
+      const key = 'ops_theme';
+      const root = document.documentElement;
+      function apply(theme){
+        const dark = theme === 'dark';
+        root.classList.toggle('theme-dark', dark);
+        const moon = document.getElementById('iconMoon');
+        const sun  = document.getElementById('iconSun');
+        if(moon && sun){ moon.classList.toggle('hidden', dark); sun.classList.toggle('hidden', !dark); }
+      }
+      const saved = localStorage.getItem(key) || 'light';
+      apply(saved);
+
+      const fab = document.getElementById('themeToggleFab');
+      if(fab){
+        fab.addEventListener('click', () => {
+          const now = root.classList.contains('theme-dark') ? 'light' : 'dark';
+          localStorage.setItem(key, now);
+          apply(now);
+        });
+      }
+    })();
+  </script>
+
+  <script src="opsdata.js"></script>
+
+  <!-- Modal -->
+  <div id="appModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 grid place-items-center p-4">
+      <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b">
+          <h3 id="appModalTitle" class="text-lg font-semibold text-slate-800">Aviso</h3>
+        </div>
+        <div class="px-6 py-4">
+          <p id="appModalMsg" class="text-slate-700"></p>
+        </div>
+        <div class="px-6 py-4 border-t flex justify-end gap-2">
+          <button id="appModalOk" class="h-10 px-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const modal = document.getElementById('appModal');
+      const titleEl = document.getElementById('appModalTitle');
+      const msgEl = document.getElementById('appModalMsg');
+      const okBtn = document.getElementById('appModalOk');
+      let okHandler = null;
+      window.showModal = function(message, title='Aviso', okText='Aceptar', onOk=null){
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        okBtn.textContent = okText;
+        okHandler = typeof onOk === 'function' ? onOk : null;
+        modal.classList.remove('hidden');
+      };
+      function close(){ modal.classList.add('hidden'); }
+      okBtn.addEventListener('click', function(){ const cb = okHandler; okHandler=null; close(); if(cb){ try{cb();}catch(e){} } });
+      modal.addEventListener('click', function(e){ if(e.target === modal){ close(); } });
+      document.addEventListener('keydown', function(e){ if(!modal.classList.contains('hidden') && e.key === 'Escape'){ close(); } });
+    })();
+  </script>
+
+</body>
+</html>
